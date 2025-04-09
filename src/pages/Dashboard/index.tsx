@@ -1,4 +1,5 @@
-import { PageIntro } from "../../components/PageIntro/PageIntro.component"
+import { Box } from "@mui/material";
+import { Header } from "../../components/Header";
 
 export default function Dashboard() {
   const links = [
@@ -13,12 +14,11 @@ export default function Dashboard() {
   ];
 
   return (
-    <>
-      <PageIntro
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%", width: "100%" }}>
+      <Header
         title="Dashboard"
         links={links}
-        description="This is the dashboard page. You can find various statistics and information here."
       />
-    </>
+    </Box>
   );
 }

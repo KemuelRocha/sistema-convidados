@@ -8,7 +8,7 @@ export const PageIntro: FunctionComponent<PageIntroProps> = ({
   description,
 }) => {
   return (
-    <>
+    <Box display="flex" flexDirection="column" pt={2} pb={2}>
       <Breadcrumbs aria-label="breadcrumb">
         {links.map((link) => (
           <Typography
@@ -28,12 +28,9 @@ export const PageIntro: FunctionComponent<PageIntroProps> = ({
           </Typography>
         ))}
       </Breadcrumbs>
-      <Typography variant="h4" component="h1" gutterBottom textAlign={'left'}>
+      <Typography variant="h4" component="h1" gutterBottom textAlign={'left'} marginBottom={0}>
         {title}
       </Typography>
-      <Typography variant="body1" gutterBottom textAlign={'left'}>
-        {description}
-      </Typography>
-    </>
+    </Box>
   )
 };
