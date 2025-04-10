@@ -64,7 +64,7 @@ export default function Cadastro() {
   return (
     <>
       <Header title="Cadastro" links={links} />
-      <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Container maxWidth="xl" sx={{ mt: 4 }}>
         <Paper elevation={4} sx={{ p: 4 }}>
           <Box component="form" onSubmit={handleSubmit}>
             <Grid container spacing={2}>

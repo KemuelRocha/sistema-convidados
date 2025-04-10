@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -25,9 +24,6 @@ export const Sidebar: FunctionComponent<SidebarProps> = () => {
         break;
       case 'Apresentacao':
         navigate('/apresentacao');
-        break;
-      case 'Estatisticas':
-        navigate('/estatisticas');
         break;
       default:
         break;
@@ -67,7 +63,7 @@ export const Sidebar: FunctionComponent<SidebarProps> = () => {
           }}
         />
         <List>
-          {['Dashboard', 'Cadastro', 'Atualizacao', 'Apresentacao', 'Estatisticas'].map((text, index) => (
+          {['Dashboard', 'Cadastro', 'Atualizacao', 'Apresentacao'].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton onClick={() => onClick(text)}>
                 <ListItemIcon sx={{ color: '#fff' }}>
@@ -75,7 +71,6 @@ export const Sidebar: FunctionComponent<SidebarProps> = () => {
                   {index === 1 && <GroupAddIcon />}
                   {index === 2 && <ManageAccountsIcon />}
                   {index === 3 && <PeopleOutlineIcon />}
-                  {index === 4 && <AutoGraphIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>

@@ -3,7 +3,6 @@ import Apresentacao from "./pages/Apresentacao";
 import Dashboard from "./pages/Dashboard";
 import Cadastro from "./pages/Cadastro";
 import Atualizacao from "./pages/Atualizacao";
-import Estatisticas from "./pages/Estatisticas";
 
 export default function AppRoutes() {
   return (
@@ -13,7 +12,6 @@ export default function AppRoutes() {
       <Route path="/cadastro" element={<Cadastro />} />
       <Route path="/atualizacao" element={<Atualizacao />} />
       <Route path="/apresentacao" element={<Apresentacao />} />
-      <Route path="/estatisticas" element={<Estatisticas />} />
     </Routes>
   );
 }

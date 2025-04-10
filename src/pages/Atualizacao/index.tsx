@@ -101,7 +101,7 @@ export default function Atualizacao() {
   return (
     <>
       <Header title="Atualização" links={links} />
-      <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Container maxWidth="xl" sx={{ mt: 4 }}>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
