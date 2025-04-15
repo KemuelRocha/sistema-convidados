@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { Header } from '../../components/Header';
+import { salvarCadastro } from '../../services/firebase';
 
 const links = [
   { name: 'Home', href: '/' },
@@ -19,10 +20,10 @@ const links = [
 const categorias = ['Pastor', 'Autoridade', 'Caravana', 'Membro', 'Visitante'];
 
 const statusConvite = [
-  'Convite Enviado',
-  'Presença Confirmada',
-  'Chegou no Evento',
-  'Pronto para Apresentação',
+  'Enviado',
+  'Confirmado',
+  'Presente',
+  'Pronto',
 ];
 
 export default function Cadastro() {
@@ -56,9 +57,10 @@ export default function Cadastro() {
     setForm({ ...form, acompanhantes: novos });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Enviando dados:', form);
+    await salvarCadastro(form);
   };
 
   return (

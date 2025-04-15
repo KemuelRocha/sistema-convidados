@@ -11,63 +11,46 @@ import {
   Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Header } from '../../components/Header';
+import { atualizarConvidado, obterConvidados } from '../../services/firebase';
 
 const links = [
   { name: 'Home', href: '/' },
   { name: 'Apresentação', href: '/apresentacao' },
 ];
 
-const dadosFake = [
-  {
-    id: 1,
-    nome: 'João da Silva',
-    cidade: 'São Paulo',
-    categoria: 'Pastores',
-    status: 'Chegou no Evento',
-    observacoes: 'Primeira vez no evento',
-    representante: '',
-    acompanhantes: ['Maria', 'José'],
-    apresentado: false,
-  },
-  {
-    id: 2,
-    nome: 'Ana Souza',
-    cidade: 'Rio de Janeiro',
-    categoria: 'Caravanas',
-    status: 'Pronto para Apresentação',
-    observacoes: '',
-    representante: 'Carlos Almeida',
-    acompanhantes: ['Lucas', 'Fernanda', 'Pedro'],
-    apresentado: true,
-  },
-  {
-    id: 3,
-    nome: 'Marcos Lima',
-    cidade: 'Belo Horizonte',
-    categoria: 'Autoridades',
-    status: 'Pronto para Apresentação',
-    observacoes: '',
-    representante: '',
-    acompanhantes: [],
-    apresentado: false,
-  },
-];
-
 export default function Apresentacao() {
   const [abaAtiva, setAbaAtiva] = useState(0);
-  const [convidados, setConvidados] = useState(dadosFake);
+  const [convidados, setConvidados] = useState<any[]>([]);
 
-  const marcarComoApresentado = (id: number) => {
-    setConvidados((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, apresentado: true } : c))
-    );
+  const marcarComoApresentado = async (id: number) => {
+    const novos = convidados.map((c) => {
+      if (c.id === id) {
+        return { ...c, apresentado: true };
+      }
+      return c;
+    });
+    setConvidados(novos);
+
+    try {
+      await atualizarConvidado(id.toString(), { apresentado: true });
+    } catch (error) {
+      console.error('Erro ao atualizar convidado:', error);
+    }
   };
 
   const convidadosApresentar = convidados.filter((c) => !c.apresentado);
   const convidadosApresentados = convidados.filter((c) => c.apresentado);
   const convidadosFiltrados = abaAtiva === 0 ? convidadosApresentar : convidadosApresentados;
+
+  useEffect(() => {
+    const carregarConvidados = async () => {
+      const dados = await obterConvidados();
+      setConvidados(dados);
+    };
+    carregarConvidados();
+  }, []);
 
   return (
     <>
@@ -103,7 +86,7 @@ export default function Apresentacao() {
                       <>
                         <Typography mt={1}><strong>Acompanhantes:</strong></Typography>
                         <ul>
-                          {c.acompanhantes.map((a, idx) => (
+                          {c.acompanhantes.map((a: string, idx: number) => (
                             <li key={idx}>{a}</li>
                           ))}
                         </ul>

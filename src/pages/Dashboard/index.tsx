@@ -17,67 +17,31 @@ import {
 import { Header } from "../../components/Header";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { obterConvidados } from "../../services/firebase";
 
 const links = [
   { name: "Home", href: "/" },
   { name: "Dashboard", href: "/dashboard" },
 ];
 
-const dadosFake = [
-  {
-    id: 1,
-    nome: "João da Silva",
-    cidade: "São Paulo",
-    categoria: "Pastores",
-    status: "Chegou no Evento",
-    apresentado: false,
-    acompanhantes: 2,
-  },
-  {
-    id: 2,
-    nome: "Ana Souza",
-    cidade: "Rio de Janeiro",
-    categoria: "Caravanas",
-    status: "Pronto para Apresentação",
-    apresentado: true,
-    acompanhantes: 3,
-  },
-  {
-    id: 3,
-    nome: "Marcos Lima",
-    cidade: "Belo Horizonte",
-    categoria: "Autoridades",
-    status: "Pronto para Apresentação",
-    apresentado: false,
-    acompanhantes: 2,
-  },
-  {
-    id: 4,
-    nome: "Juliana Castro",
-    cidade: "Recife",
-    categoria: "Pastores",
-    status: "Chegou no Evento",
-    apresentado: true,
-    acompanhantes: 1,
-  },
-];
-
 const cores = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 export default function Dashboard() {
-  const totalConvidados = dadosFake.length;
-  const porCategoria = dadosFake.reduce((acc, curr) => {
+  const [convidados, setConvidados] = useState<any[]>([]);
+
+  const totalConvidados = convidados.length;
+  const porCategoria = convidados.reduce((acc, curr) => {
     acc[curr.categoria] = (acc[curr.categoria] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const porStatus = dadosFake.reduce((acc, curr) => {
+  const porStatus = convidados.reduce((acc, curr) => {
     acc[curr.status] = (acc[curr.status] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const apresentados = dadosFake.filter((d) => d.apresentado).length;
+  const apresentados = convidados.filter((d) => d.apresentado).length;
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -90,6 +54,14 @@ export default function Dashboard() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  useEffect(() => {
+    const carregarConvidados = async () => {
+      const dados = await obterConvidados();
+      setConvidados(dados);
+    };
+    carregarConvidados();
+  }, []);
 
   const categoriasChartOptions = {
     chart: {
@@ -227,7 +199,7 @@ export default function Dashboard() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dadosFake
+                    {convidados
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((convidado) => (
                         <TableRow key={convidado.id}>
@@ -243,7 +215,7 @@ export default function Dashboard() {
               </TableContainer>
               <TablePagination
                 component="div"
-                count={dadosFake.length}
+                count={convidados.length}
                 page={page}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}

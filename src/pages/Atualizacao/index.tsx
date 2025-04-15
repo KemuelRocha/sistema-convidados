@@ -22,7 +22,8 @@ import {
 } from '@mui/material';
 import { Header } from '../../components/Header';
 import { ExpandLess, ExpandMore, Edit } from '@mui/icons-material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { obterConvidados, atualizarConvidado } from '../../services/firebase';
 
 const links = [
   { name: 'Home', href: '/' },
@@ -30,50 +31,43 @@ const links = [
 ];
 
 const statusConvite = [
-  'Convite Enviado',
-  'Presença Confirmada',
-  'Chegou no Evento',
-  'Pronto para Apresentação',
+  'Enviado',
+  'Confirmado',
+  'Presente',
+  'Pronto',
 ];
 
-const convidadosFake = [
-  {
-    id: 1,
-    nome: 'João da Silva',
-    cidade: 'São Paulo',
-    categoria: 'Pastor',
-    status: 'Convite Enviado',
-    acompanhantes: ['Maria', 'Carlos'],
-  },
-  {
-    id: 2,
-    nome: 'Ana Pereira',
-    cidade: 'Rio de Janeiro',
-    categoria: 'Caravana',
-    status: 'Chegou no Evento',
-    acompanhantes: [],
-  },
-];
 
 const categorias = ['Pastor', 'Autoridade', 'Caravana', 'Membro', 'Visitante'];
 
 export default function Atualizacao() {
-  const [convidados, setConvidados] = useState(convidadosFake);
-  const [abertos, setAbertos] = useState<number[]>([]);
+  const [convidados, setConvidados] = useState<any[]>([]);
+  const [abertos, setAbertos] = useState<string[]>([]);
   const [modalAberto, setModalAberto] = useState(false);
   const [convidadoEditando, setConvidadoEditando] = useState<any | null>(null);
 
-
-  const alternarStatus = (index: number) => {
+  const alternarStatus = async (index: number) => {
     const atual = convidados[index].status;
     const atualIndex = statusConvite.indexOf(atual);
     const proximoIndex = (atualIndex + 1) % statusConvite.length;
+    const novoStatus = statusConvite[proximoIndex];
+
     const novos = [...convidados];
-    novos[index].status = statusConvite[proximoIndex];
+    novos[index].status = novoStatus;
     setConvidados(novos);
+
+    try {
+      await atualizarConvidado(convidados[index].id, { status: novoStatus });
+    } catch (err) {
+      console.error("Erro ao atualizar status:", err);
+
+      novos[index].status = atual;
+      setConvidados(novos);
+    }
   };
 
-  const toggleExpand = (id: number) => {
+
+  const toggleExpand = (id: string) => {
     setAbertos((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
@@ -89,14 +83,29 @@ export default function Atualizacao() {
     setConvidadoEditando(null);
   };
 
-  const salvarEdicao = () => {
-    const novos = convidados.map((c) =>
-      c.id === convidadoEditando.id ? convidadoEditando : c
-    );
-    setConvidados(novos);
+  const salvarEdicao = async () => {
+    await atualizarConvidado(convidadoEditando.id, {
+      nome: convidadoEditando.nome,
+      cidade: convidadoEditando.cidade,
+      categoria: convidadoEditando.categoria,
+      status: convidadoEditando.status,
+      representante: convidadoEditando.representante,
+      acompanhantes: convidadoEditando.acompanhantes,
+    });
+
+    const dados = await obterConvidados();
+    setConvidados(dados);
     fecharModal();
   };
 
+
+  useEffect(() => {
+    const carregarConvidados = async () => {
+      const dados = await obterConvidados();
+      setConvidados(dados);
+    };
+    carregarConvidados();
+  }, []);
 
   return (
     <>
@@ -147,7 +156,7 @@ export default function Atualizacao() {
                         <Box sx={{ p: 2 }}>
                           <Typography variant="subtitle2">Acompanhantes:</Typography>
                           {convidado.acompanhantes.length > 0 ? (
-                            convidado.acompanhantes.map((acomp, i) => (
+                            convidado.acompanhantes.map((acomp: string, i: number) => (
                               <Typography key={i} variant="body2" sx={{ ml: 2 }}>
                                 - {acomp}
                               </Typography>
